@@ -1,4 +1,4 @@
-window.THREE = require('./Three.js')
+window.THREE = require('../lib/threejs/Three.js')
 
 function TestCharacter()
 {

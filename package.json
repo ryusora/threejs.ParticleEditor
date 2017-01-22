@@ -15,7 +15,9 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-es2016": "^6.11.3",
     "babel-preset-es2017": "*",
-    "webpack": "*"
+    "babel-preset-stage-0": "^6.16.0",
+    "webpack": "*",
+    "webpack-glsl-loader": "^1.0.1"
   },
   "devDependencies": {
     "babel": "^6.5.2",

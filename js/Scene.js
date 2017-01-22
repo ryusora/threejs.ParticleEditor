@@ -1,2 +1,2 @@
-window.THREE = require('./Three.js')
+window.THREE = require('../lib/threejs/Three.js')
 module.exports = new THREE.Scene();

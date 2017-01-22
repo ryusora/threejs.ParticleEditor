@@ -14,14 +14,13 @@ module.exports =
    devtool: 'source-map',
    module:
    {
-      loaders:
-      [{
+      loaders:[{
          test: /\.js$/,
          loader: 'babel-loader',
          exclude: /node_modules/,
          query:
          {
-            presets: [ 'es2015' ],
+            presets: [ 'es2015',"stage-0" ],
             plugins:
             [
                'babel-plugin-syntax-flow',
@@ -30,6 +29,9 @@ module.exports =
                'transform-runtime',
             ]
          }
+     }, {
+         test: /\.glsl$/,
+         loader: 'webpack-glsl'
      }]
    },
    resolve:
