@@ -26,7 +26,6 @@ module.exports =
                'babel-plugin-syntax-flow',
                'babel-plugin-transform-flow-strip-types',
                'transform-class-properties',
-               'transform-runtime',
             ]
          }
      }, {
