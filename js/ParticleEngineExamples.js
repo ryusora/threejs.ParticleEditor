@@ -338,15 +338,15 @@ var Examples =
 		positionRadius : 1,
 
 		velocityStyle  : Type.SPHERE,
-		speedBase      : 9,
-		speedSpread    : 0.1,
+		speedBase      : 10,
+		speedSpread    : 5,
 
 		accelerationBase : new THREE.Vector3( 0, 0, 0 ),
 
 		texture 		: 'spark',
 		particleTexture : null,
 
-		sizeTween    : new Tween( [0.1, 0.5, 0.7], [1, 3.5, 0.1] ),
+		sizeTween    : new Tween( [0.1, 0.5, 0.7], [10, 15, 1] ),
 		opacityTween : new Tween( [0.2, 0.7, 1.5], [0.75, 1, 0] ),
 		colorTween   : new Tween( [0.4, 0.8, 1.0], [ new THREE.Vector3(0,1,1), new THREE.Vector3(0,1,0.6), new THREE.Vector3(0.8, 1, 0.6) ] ),
 		blendStyle   : THREE.AdditiveBlending,
@@ -391,21 +391,16 @@ var Examples =
 
 	updateGUI: function(target, gui, engine)
 	{
-		// Position Style : CUBE or SPHERE
-		target.positionStyle = target.positionStyle || engine.positionStyle;
-		gui.add(target, "positionStyle", [Type.CUBE, Type.SPHERE]).onChange(function(newValue){
-			target.positionStyle = newValue;
-			engine.positionStyle = newValue;
-		});
 		// particleTexture
 		gui.add(target, "texture", this.textureList).onChange(newValue=>{
 			target.texture = newValue
 			target.particleTexture = TextureManager.get(newValue)
 		})
-		var folder;
+		// position
+		var mainFolder = gui.addFolder("Position");
 		// Position Base : THREE.Vector3
 		target.positionBase = target.positionBase || engine.positionBase;
-		folder = gui.addFolder("Position Base");
+		var folder = mainFolder.addFolder("Position Base");
 		folder.add(target.positionBase, "x", -500, 500, 5).onChange(function(newValue){
 			target.positionBase.x = newValue;
 			engine.positionBase.x = newValue;
@@ -418,48 +413,88 @@ var Examples =
 			target.positionBase.z = newValue;
 			engine.positionBase.z = newValue;
 		});
-		// Position Spread : THREE.Vector3
-		target.positionSpread = target.positionSpread || engine.positionSpread;
-		folder = gui.addFolder("Position Spread");
-		folder.add(target.positionSpread, "x", -500, 500, 5).onChange(function(newValue){
-			target.positionSpread.x = newValue;
-			engine.positionSpread.x = newValue;
-		});
-		folder.add(target.positionSpread, "y", -500, 500, 5).onChange(function(newValue){
-			target.positionSpread.y = newValue;
-			engine.positionSpread.y = newValue;
-		});
-		folder.add(target.positionSpread, "z", -500, 500, 5).onChange(function(newValue){
-			target.positionSpread.z = newValue;
-			engine.positionSpread.z = newValue;
+
+		// Position Style : CUBE or SPHERE
+		target.positionStyle = target.positionStyle || engine.positionStyle;
+		folder.add(target, "positionStyle", [Type.CUBE, Type.SPHERE]).onChange(function(newValue){
+			target.positionStyle = newValue;
+			engine.positionStyle = newValue;
+			gui.destroy()
+			this.updateGUI(target, gui, engine)
 		});
 
+		// Position Spread : THREE.Vector3
+		if(target.positionStyle == Type.CUBE)
+		{
+			target.positionSpread = target.positionSpread || engine.positionSpread;
+			folder = mainFolder.addFolder("Position Spread");
+			folder.add(target.positionSpread, "x", -500, 500, 5).onChange(function(newValue){
+				target.positionSpread.x = newValue;
+				engine.positionSpread.x = newValue;
+			});
+			folder.add(target.positionSpread, "y", -500, 500, 5).onChange(function(newValue){
+				target.positionSpread.y = newValue;
+				engine.positionSpread.y = newValue;
+			});
+			folder.add(target.positionSpread, "z", -500, 500, 5).onChange(function(newValue){
+				target.positionSpread.z = newValue;
+				engine.positionSpread.z = newValue;
+			});
+		}
+		else
+		{
+			target.positionRadius = target.positionRadius || engine.positionRadius
+			mainFolder.add(target, "positionRadius").onChange(value => {
+				target.positionRadius = value
+				engine.positionRadius = value
+			})
+		}
+
 		// Velocity type : CUBE or SPHERE
+		mainFolder = gui.addFolder("Velocity")
 		target.velocityStyle = target.velocityStyle || engine.velocityStyle;
-		gui.add(target, "velocityStyle", [Type.CUBE, Type.SPHERE]).onChange(function(newValue){
+		mainFolder.add(target, "velocityStyle", [Type.CUBE, Type.SPHERE]).onChange(function(newValue){
 			target.velocityStyle = newValue;
 			engine.velocityStyle = target.velocityStyle;
+			gui.destroy()
+			this.updateGUI(target, gui, engine)
 		});
 
 		// Velocity Base : THREE.Vector3
-		target.velocityBase = target.velocityBase || engine.velocityBase;
-		folder = gui.addFolder("Velocity Base");
-		folder.add(target.velocityBase, "x", -500, 500, 5).onChange(function(newValue){
-			target.velocityBase.x = newValue;
-			engine.velocityBase.x = newValue;
-		});
-		folder.add(target.velocityBase, "y", -500, 500, 5).onChange(function(newValue){
-			target.velocityBase.y = newValue;
-			engine.velocityBase.y = newValue;
-		});
-		folder.add(target.velocityBase, "z", -500, 500, 5).onChange(function(newValue){
-			target.velocityBase.z = newValue;
-			engine.velocityBase.z = newValue;
-		});
+		if(target.velocityStyle == Type.CUBE)
+		{
+			target.velocityBase = target.velocityBase || engine.velocityBase;
+			folder = mainFolder.addFolder("Velocity Base");
+			folder.add(target.velocityBase, "x", -500, 500, 5).onChange(function(newValue){
+				target.velocityBase.x = newValue;
+				engine.velocityBase.x = newValue;
+			});
+			folder.add(target.velocityBase, "y", -500, 500, 5).onChange(function(newValue){
+				target.velocityBase.y = newValue;
+				engine.velocityBase.y = newValue;
+			});
+			folder.add(target.velocityBase, "z", -500, 500, 5).onChange(function(newValue){
+				target.velocityBase.z = newValue;
+				engine.velocityBase.z = newValue;
+			});
+		}
+		else
+		{
+			target.speedBase = target.speedBase || engine.speedBase
+			mainFolder.add(target, "speedBase").onChange(newVal =>{
+				target.speedBase = newVal
+				engine.speedBase = newVal
+			})
+
+			mainFolder.add(target, "speedSpread").onChange(newVal =>{
+				target.speedSpread = newVal
+				engine.speedSpread = newVal
+			})
+		}
 
 		// Velocity SPREAD : THREE.Vector3
 		target.velocitySpread = target.velocitySpread || engine.velocitySpread;
-		folder = gui.addFolder("Velocity Spread");
+		folder = mainFolder.addFolder("Velocity Spread");
 		folder.add(target.velocitySpread, "x", -500, 500, 5).onChange(function(newValue){
 			target.velocitySpread.x = newValue;
 			engine.velocitySpread.x = newValue;
@@ -474,8 +509,9 @@ var Examples =
 		});
 
 		// Acceleration Base : THREE.Vector3
+		mainFolder = gui.addFolder("Acceleration")
 		target.accelerationBase = target.accelerationBase || engine.accelerationBase;
-		folder = gui.addFolder("Acceleration Base");
+		folder = mainFolder.addFolder("Acceleration Base");
 		folder.add(target.accelerationBase, "x", -500, 500, 5).onChange(function(newValue){
 			target.accelerationBase.x = newValue;
 			engine.accelerationBase.x = newValue;
@@ -488,53 +524,82 @@ var Examples =
 			target.accelerationBase.z = newValue;
 			engine.accelerationBase.z = newValue;
 		});
+		// Acceleration Spread
+		folder = mainFolder.addFolder("Acceleration Spread");
+		target.accelerationSpread = target.accelerationSpread || engine.accelerationSpread
+		folder.add(target.accelerationSpread, "x", -500, 500, 5).onChange(function(newValue){
+			target.accelerationSpread.x = newValue;
+			engine.accelerationSpread.x = newValue;
+		});
+		folder.add(target.accelerationSpread, "y", -500, 500, 5).onChange(function(newValue){
+			target.accelerationSpread.y = newValue;
+			engine.accelerationSpread.y = newValue;
+		});
+		folder.add(target.accelerationSpread, "z", -500, 500, 5).onChange(function(newValue){
+			target.accelerationSpread.z = newValue;
+			engine.accelerationSpread.z = newValue;
+		});
 		// Angle Base
-		folder = gui.addFolder("Angle");
+		mainFolder = gui.addFolder("Angle");
 		target.angleBase = target.angleBase || engine.angleBase;
-		folder.add(target, "angleBase", -1440, 1440, 5).onChange(function(newValue){
+		mainFolder.add(target, "angleBase", -1440, 1440, 5).onChange(function(newValue){
 			target.angleBase = newValue;
 			engine.angleBase = newValue;
 		});
 
 		// Angle Spread
 		target.angleSpread = target.angleSpread || engine.angleSpread;
-		folder.add(target, "angleSpread", -1440, 1440, 5).onChange(function(newValue){
+		mainFolder.add(target, "angleSpread", -1440, 1440, 5).onChange(function(newValue){
 			target.angleSpread = newValue;
 			engine.angleSpread = newValue;
 		});
 
 		// Angle Velocity Base
 		target.angleVelocityBase = target.angleVelocityBase || engine.angleVelocityBase;
-		folder.add(target, "angleVelocityBase", -1440, 1440, 5).onChange(function(newValue){
+		mainFolder.add(target, "angleVelocityBase", -1440, 1440, 5).onChange(function(newValue){
 			target.angleVelocityBase = newValue;
 			engine.angleVelocityBase = newValue;
 		});
 
 		// Angle Velocity Spread
 		target.angleVelocitySpread = target.angleVelocitySpread || engine.angleVelocitySpread;
-		folder.add(target, "angleVelocitySpread", -1440, 1440, 5).onChange(function(newValue){
+		mainFolder.add(target, "angleVelocitySpread", -1440, 1440, 5).onChange(function(newValue){
 			target.angleVelocitySpread = newValue;
 			engine.angleVelocitySpread = newValue;
 		});
 
+		// Angle Acceleration Base
+		target.angleAccelerationBase = target.angleAccelerationBase || engine.angleAccelerationBase;
+		mainFolder.add(target, "angleAccelerationBase", -1440, 1440, 5).onChange(function(newValue){
+			target.angleAccelerationBase = newValue;
+			engine.angleAccelerationBase = newValue;
+		});
+
+		// Angle Velocity Spread
+		target.angleAccelerationSpread = target.angleAccelerationSpread || engine.angleAccelerationSpread;
+		mainFolder.add(target, "angleAccelerationSpread", -1440, 1440, 5).onChange(function(newValue){
+			target.angleAccelerationSpread = newValue;
+			engine.angleAccelerationSpread = newValue;
+		});
+
 		// particlesPerSecond
-		folder = gui.addFolder("Particles")
+		mainFolder = gui.addFolder("Particles")
 		target.particlesPerSecond = target.particlesPerSecond || engine.particlesPerSecond;
-		folder.add(target, "particlesPerSecond").onChange(function(newValue){
+		mainFolder.add(target, "particlesPerSecond").onChange(function(newValue){
 			target.particlesPerSecond = newValue;
 			engine.particlesPerSecond = newValue;
 		});
 
 		// particleDeathAge
 		target.particleDeathAge = target.particleDeathAge || engine.particleDeathAge;
-		folder.add(target, "particleDeathAge").onChange(function(newValue){
+		mainFolder.add(target, "particleDeathAge").onChange(function(newValue){
 			target.particleDeathAge = newValue;
 			engine.particleDeathAge = newValue;
 		});
 
 		// emitterDeathAge
 		target.emitterDeathAge = target.emitterDeathAge || engine.emitterDeathAge;
-		folder.add(target, "emitterDeathAge").onChange(function(newValue){
+		mainFolder.add(target, "emitterDeathAge").onChange(function(newValue){
 			target.emitterDeathAge = newValue;
 			engine.emitterDeathAge = newValue;
 		});
