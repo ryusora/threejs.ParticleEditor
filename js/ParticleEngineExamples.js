@@ -391,13 +391,19 @@ var Examples =
 
 	updateGUI: function(target, gui, engine)
 	{
-		// particleTexture
+		//===============================================================
+		// Particle Texture
+		//===============================================================
 		gui.add(target, "texture", this.textureList).onChange(newValue=>{
 			target.texture = newValue
 			target.particleTexture = TextureManager.get(newValue)
 		})
+
+		//===============================================================
 		// position
-		var mainFolder = gui.addFolder("Position");
+		//===============================================================
+		var mainFolder = gui.addFolder("Position")
+
 		// Position Base : THREE.Vector3
 		target.positionBase = target.positionBase || engine.positionBase;
 		var folder = mainFolder.addFolder("Position Base");
@@ -449,9 +455,12 @@ var Examples =
 				engine.positionRadius = value
 			})
 		}
+		//===============================================================
+		// Velocity
+		//===============================================================
+		mainFolder = gui.addFolder("Velocity")
 
 		// Velocity type : CUBE or SPHERE
-		mainFolder = gui.addFolder("Velocity")
 		target.velocityStyle = target.velocityStyle || engine.velocityStyle;
 		mainFolder.add(target, "velocityStyle", [Type.CUBE, Type.SPHERE]).onChange(function(newValue){
 			target.velocityStyle = newValue;
@@ -508,8 +517,12 @@ var Examples =
 			engine.velocitySpread.z = newValue;
 		});
 
-		// Acceleration Base : THREE.Vector3
+		//===============================================================
+		// Acceleration
+		//===============================================================
 		mainFolder = gui.addFolder("Acceleration")
+
+		// Acceleration Base : THREE.Vector3
 		target.accelerationBase = target.accelerationBase || engine.accelerationBase;
 		folder = mainFolder.addFolder("Acceleration Base");
 		folder.add(target.accelerationBase, "x", -500, 500, 5).onChange(function(newValue){
@@ -539,8 +552,13 @@ var Examples =
 			target.accelerationSpread.z = newValue;
 			engine.accelerationSpread.z = newValue;
 		});
-		// Angle Base
+
+		//===============================================================
+		// Angles
+		//===============================================================
 		mainFolder = gui.addFolder("Angle");
+
+		// Angle Base
 		target.angleBase = target.angleBase || engine.angleBase;
 		mainFolder.add(target, "angleBase", -1440, 1440, 5).onChange(function(newValue){
 			target.angleBase = newValue;
@@ -582,8 +600,13 @@ var Examples =
 			engine.angleAccelerationSpread = newValue;
 		});
 
-		// particlesPerSecond
+
+		//===============================================================
+		// Particles
+		//===============================================================
 		mainFolder = gui.addFolder("Particles")
+
+		// particlesPerSecond
 		target.particlesPerSecond = target.particlesPerSecond || engine.particlesPerSecond;
 		mainFolder.add(target, "particlesPerSecond").onChange(function(newValue){
 			target.particlesPerSecond = newValue;
@@ -603,6 +626,152 @@ var Examples =
 			target.emitterDeathAge = newValue;
 			engine.emitterDeathAge = newValue;
 		});
+
+		//===============================================================
+		// Size
+		//===============================================================
+		mainFolder = gui.addFolder("Size Tween")
+
+		// size base
+		target.sizeBase = target.sizeBase || engine.sizeBase
+		mainFolder.add(target, "sizeBase").onChange(newValue =>{
+			target.sizeBase = newValue
+			engine.sizeBase = newValue
+		})
+
+		// Size Spread
+		target.sizeSpread = target.sizeSpread || engine.sizeSpread
+		mainFolder.add(target, "sizeSpread").onChange(newValue =>{
+			target.sizeSpread = newValue
+			engine.sizeSpread = newValue
+		})
+
+		target.sizeTween = target.sizeTween || engine.sizeTween
+		folder = mainFolder.addFolder("Times")
+		for(let i in target.sizeTween.times)
+		{
+			folder.add(target.sizeTween.times, i).name("t-" + i).onChange(newValue=>{
+				target.sizeTween.times[i] = newValue
+				engine.sizeTween.times[i] = newValue
+			})
+		}
+
+		folder = mainFolder.addFolder("Values")
+		for(let i in target.colorTween.values)
+		{
+			folder.add(target.sizeTween.values, i).name("v-" + i).onChange(newValue=>{
+				target.sizeTween.values[i] = newValue
+				engine.sizeTween.values[i] = newValue
+			})
+		}
+
+		//===============================================================
+		// Color
+		//===============================================================
+		mainFolder = gui.addFolder("Color Tween")
+
+		// Color base
+		target.colorBase = target.colorBase || engine.colorBase
+		folder = mainFolder.addFolder("Color Base")
+		folder.add(target.colorBase, 'x').onChange(newValue =>{
+			target.colorBase.x = newValue
+			engine.colorBase.x = newValue
+		})
+
+		folder.add(target.colorBase, 'y').onChange(newValue =>{
+			target.colorBase.y = newValue
+			engine.colorBase.y = newValue
+		})
+
+		folder.add(target.colorBase, 'z').onChange(newValue =>{
+			target.colorBase.z = newValue
+			engine.colorBase.z = newValue
+		})
+
+		// Color Spread
+		target.colorSpread = target.colorSpread || engine.colorSpread
+		folder = mainFolder.addFolder("Color Spread")
+		folder.add(target.colorSpread, 'x').onChange(newValue =>{
+			target.colorSpread.x = newValue
+			engine.colorSpread.x = newValue
+		})
+
+		folder.add(target.colorSpread, 'y').onChange(newValue =>{
+			target.colorSpread.y = newValue
+			engine.colorSpread.y = newValue
+		})
+
+		folder.add(target.colorSpread, 'z').onChange(newValue =>{
+			target.colorSpread.z = newValue
+			engine.colorSpread.z = newValue
+		})
+
+		// Color Tween
+		target.colorTween = target.colorTween || engine.colorTween
+		folder = mainFolder.addFolder("Times")
+		for(let i in target.colorTween.times)
+		{
+			folder.add(target.colorTween.times, i).name("t-" + i).onChange(newValue=>{
+				target.colorTween.times[i] = newValue
+				engine.colorTween.times[i] = newValue
+			})
+		}
+
+		folder = mainFolder.addFolder("Values")
+		for(let i in target.colorTween.values)
+		{
+			let subFolder = folder.addFolder("v-" + i)
+			subFolder.add(target.colorTween.values[i], 'x').onChange(newValue=>{
+				target.colorTween.values[i].x = newValue
+				engine.colorTween.values[i].x = newValue
+			})
+			subFolder.add(target.colorTween.values[i], 'y').onChange(newValue=>{
+				target.colorTween.values[i].y = newValue
+				engine.colorTween.values[i].y = newValue
+			})
+			subFolder.add(target.colorTween.values[i], 'z').onChange(newValue=>{
+				target.colorTween.values[i].z = newValue
+				engine.colorTween.values[i].z = newValue
+			})
+		}
+
+		//===============================================================
+		// Opacity
+		//===============================================================
+		mainFolder = gui.addFolder("Opacity Tween")
+
+		// size base
+		target.opacityBase = target.opacityBase || engine.opacityBase
+		mainFolder.add(target, "opacityBase").onChange(newValue =>{
+			target.opacityBase = newValue
+			engine.opacityBase = newValue
+		})
+
+		// Size Spread
+		target.opacitySpread = target.opacitySpread || engine.opacitySpread
+		mainFolder.add(target, "opacitySpread").onChange(newValue =>{
+			target.opacitySpread = newValue
+			engine.opacitySpread = newValue
+		})
+
+		target.opacityTween = target.opacityTween || engine.opacityTween
+		folder = mainFolder.addFolder("Times")
+		for(let i in target.opacityTween.times)
+		{
+			folder.add(target.opacityTween.times, i).name("t-" + i).onChange(newValue=>{
+				target.opacityTween.times[i] = newValue
+				engine.opacityTween.times[i] = newValue
+			})
+		}
+
+		folder = mainFolder.addFolder("Values")
+		for(let i in target.colorTween.values)
+		{
+			folder.add(target.opacityTween.values, i).name("v-" + i).onChange(newValue=>{
+				target.opacityTween.values[i] = newValue
+				engine.opacityTween.values[i] = newValue
+			})
+		}
 	},
 	/*
 	texturesList:[
