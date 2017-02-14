@@ -20,7 +20,7 @@ module.exports =
          exclude: /node_modules/,
          query:
          {
-            presets: [ 'es2015',"stage-0" ],
+            presets: [ 'es2015' ],
             plugins:
             [
                'babel-plugin-syntax-flow',
@@ -30,7 +30,7 @@ module.exports =
          }
      }, {
          test: /\.glsl$/,
-         loader: 'webpack-glsl'
+         loader: 'webpack-glsl-loader'
      }]
    },
    resolve:
@@ -45,10 +45,10 @@ module.exports =
 
 if (enviroment == '_development')
 {
-   console.log('[Development Plugins]', 'HotModuleReplacementPlugin', 'NoErrorsPlugin');
+   console.log('[Development Plugins]', 'HotModuleReplacementPlugin', 'NoEmitOnErrorsPlugin');
    module.exports.plugins.push(
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoErrorsPlugin()
+      new webpack.NoEmitOnErrorsPlugin()
    )
 }
 // else

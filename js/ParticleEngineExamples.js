@@ -66,20 +66,19 @@ window.TextureManager = require('./TextureManager.js')
 
 var Examples =
 {
-
-	listParticles :{
-		fountain:"fountain",
-		startunnel:"startunnel",
-		starfield:"starfield",
-		fireflies:"fireflies",
-		clouds:"clouds",
-		smoke:"smoke",
-		fireball:"fireball",
-		candle:"candle",
-		rain:"rain",
-		snow:"snow",
-		firework:"firework"
-	},
+	listParticles :[
+		"fountain",
+		"startunnel",
+		"starfield",
+		"fireflies",
+		"clouds",
+		"smoke",
+		"fireball",
+		"candle",
+		"rain",
+		"snow",
+		"firework"
+	],
 	textureList:[
 	'star'			,
 	'spikey'		,
@@ -96,14 +95,14 @@ var Examples =
 	fountain :
 	{
 		positionStyle    : Type.CUBE,
-		positionBase     : new THREE.Vector3( 0,  5, 0 ),
-		positionSpread   : new THREE.Vector3( 10, 10, 10 ),
+		positionBase     : new THREE.Vector3( 0,  0, 0 ),
+		positionSpread   : new THREE.Vector3( 1,  0, 10 ),
 		
 		velocityStyle    : Type.CUBE,
-		velocityBase     : new THREE.Vector3( 0,  160, 0 ),
-		velocitySpread   : new THREE.Vector3( 100, 20, 100 ), 
+		velocityBase     : new THREE.Vector3( -50, 50, 0 ),
+		velocitySpread   : new THREE.Vector3( -100, 100, 0 ), 
 
-		accelerationBase : new THREE.Vector3( 0, -300, 0 ),
+		accelerationBase : new THREE.Vector3( 0, -100, 0 ),
 		
 		texture 		: 'star',
 		particleTexture : null,
@@ -113,11 +112,11 @@ var Examples =
 		angleVelocityBase       : 0,
 		angleVelocitySpread     : 360 * 4,
 		
-		sizeTween    : new Tween( [0, 1], [1, 0.1] ),
-		opacityTween : new Tween( [2, 3], [1, 0] ),
-		colorTween   : new Tween( [0.5, 2], [ new THREE.Vector3(0,1,0.5), new THREE.Vector3(0.8, 1, 0.5) ] ),
+		sizeTween    : new Tween( [0, 1], [2, 0.1] ),
+		opacityTween : new Tween( [1, 2], [1, 0] ),
+		colorTween   : new Tween( [0, 1], [ new THREE.Vector3(0.16, 1, 0.77), new THREE.Vector3(0, 1, 0.5) ] ),
 
-		particlesPerSecond : 200,
+		particlesPerSecond : 100,
 		particleDeathAge   : 2.0,		
 		emitterDeathAge    : 60
 	},
@@ -380,8 +379,9 @@ var Examples =
 	},
 
 	initTexture: function(){
-		for(var key in this.listParticles)
+		for(var i in this.listParticles)
 		{
+			var key = this.listParticles[i]
 			if(this.hasOwnProperty(key) && this[key].hasOwnProperty("particleTexture"))
 			{
 				this[key].particleTexture = TextureManager.get(this[key].texture)
@@ -657,7 +657,7 @@ var Examples =
 		}
 
 		folder = mainFolder.addFolder("Values")
-		for(let i in target.colorTween.values)
+		for(let i in target.sizeTween.values)
 		{
 			folder.add(target.sizeTween.values, i).name("v-" + i).onChange(newValue=>{
 				target.sizeTween.values[i] = newValue
@@ -765,7 +765,7 @@ var Examples =
 		}
 
 		folder = mainFolder.addFolder("Values")
-		for(let i in target.colorTween.values)
+		for(let i in target.opacityTween.values)
 		{
 			folder.add(target.opacityTween.values, i).name("v-" + i).onChange(newValue=>{
 				target.opacityTween.values[i] = newValue
@@ -773,15 +773,6 @@ var Examples =
 			})
 		}
 	},
-	/*
-	texturesList:[
-		"raindrop2flip.png",
-		"smokeparticle.png",
-		"snowflake.png",
-		"spark.png",
-		"spikey.png",
-		"star.png",
-	]*/
 }
 
 module.exports = Examples;

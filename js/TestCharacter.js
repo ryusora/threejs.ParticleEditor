@@ -1,8 +1,8 @@
-window.THREE = require('../lib/threejs/Three.js')
+require('./core/BlendCharacter.js')
 
 function TestCharacter()
 {
-	THREE.Object3D.call(this)
+	THREE.BlendCharacter.call(this)
 	this.vectorUp 		= new THREE.Vector3( 0, 1, 0)
 	this.vectorDown 	= new THREE.Vector3( 0,-1, 0)
 	this.vectorLeft 	= new THREE.Vector3(-1, 0, 0)
@@ -11,7 +11,7 @@ function TestCharacter()
 	this.vectorOut 		= new THREE.Vector3( 0, 0, 1)
 }
 
-TestCharacter.prototype = Object.assign(Object.create(THREE.Object3D.prototype), {
+TestCharacter.prototype = Object.assign(Object.create(THREE.BlendCharacter.prototype), {
 	constructor: TestCharacter,
 	moveWithOffset:function(addedValue){
 		this.position.add(addedValue)
@@ -60,7 +60,17 @@ TestCharacter.prototype = Object.assign(Object.create(THREE.Object3D.prototype),
 	        }
 	        console.log(this.position)
 	    }, false)
-	}
+	    this.scale.multiplyScalar(16)
+	    this.play('run', 1)
+	},
+	assign(model, scene, callback) {
+		var obj = this
+        obj.loadJSON(model, () => {
+            obj.init()
+            scene.add(obj)
+            callback()
+        })
+    }
 })
 
-module.exports = TestCharacter
+module.exports = new TestCharacter()

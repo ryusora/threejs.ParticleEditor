@@ -13,8 +13,7 @@ window.scene = require('./Scene.js')
 window.FileSaver = require('./FileSaver.js')
 window.TextureManager = require('./TextureManager.js')
 window.GraphicProfiler = require('./GraphicProfiler.js')
-
-window.TestCharacter = require('./TestCharacter.js')
+const additionalData = require('../asset/particleData.js')
 
 /*
 	Three.js "tutorials by example"
@@ -27,7 +26,8 @@ window.TestCharacter = require('./TestCharacter.js')
 
 // MAIN
 window.engine = null;
-window.mainCharacter = new TestCharacter()
+window.mainCharacter = require('./TestCharacter.js')
+window.is_running = true
 
 // standard global variables
 var container, renderer, controls, stats;
@@ -46,15 +46,19 @@ var cameraDefaultPos
 // FUNCTIONS 		
 function init() 
 {
+	var loader = []
     GraphicProfiler.init()
-    window.mainCharacter.init()
     cameraDefaultPos = new THREE.Vector3(0,15,40)
 	// SCENE
 	window.scene = window.scene || new THREE.Scene();
 	//scene.fog = new THREE.Fog(0x33ccff, 10, 650)
 	// CAMERA
-	scene.add(mainCharacter)
-
+	loader.push(new Promise( (resolve, reject) =>{
+		mainCharacter.assign('asset/anim_minion_all_clips.json', window.scene, () =>{
+			resolve('Main Character init complete')
+		})
+	}))
+	
 	// RENDERER
 	renderer = new THREE.WebGLRenderer(GraphicProfiler.getWebGLContextSetting());
 	renderer.setPixelRatio(GraphicProfiler.DevicePixelRatio);
@@ -71,8 +75,12 @@ function init()
 	stats.domElement.style.zIndex = 100;
 	container.appendChild( stats.domElement );
 	// LIGHT
-	var light = new THREE.PointLight(0xffffff);
-	light.position.set(0,250,0);
+	var light = new THREE.DirectionalLight(0xffffff);
+	light.position.set(0,50,-30);
+	scene.add(light);
+
+	light = new THREE.DirectionalLight(0xffffff);
+	light.position.set(0,50,30);
 	scene.add(light);
 	// SKYBOX/FOG
 	var skyBoxGeometry = new THREE.CubeGeometry( 4000, 4000, 4000 );
@@ -80,40 +88,11 @@ function init()
 	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
     scene.add(skyBox);
 	
-	////////////
-	// CUSTOM //
-	////////////
+	// init gui
+	window.gui = new dat.GUI();
 
-	fileName = "firework";
-	
 	// GUI for experimenting with parameters
-
-	var gui = new dat.GUI();
-	var parameters =
-	{
-		Particle: 	fileName, // default value
-		Export: 	function(){
-						Examples[fileName].particleTexture = ''
-						FileSaver.saveAs(new Blob([JSON.stringify(Examples[fileName])], {type: "text/plain;charset=utf-8"}), fileName + ".json")
-						Examples.initTexture()
-					},
-		Refresh: 	function(){
-						restartEngine(Examples[fileName])
-					},
-	};
-
 	var particleList = ["fountain", "startunnel", "starfield", "fireflies", "clouds", "smoke", "fireball", "candle", "rain", "snow" , "firework"];
-
-	gui.add(parameters, "Particle", particleList)
-		.onChange(function(newValue){
-			restartEngine(Examples[newValue]);
-			gui.removeFolder(fileName);
-			fileName = newValue;
-			var curFolder = gui.addFolder(fileName);
-			Examples.updateGUI(Examples[fileName], curFolder, engine);
-		});
-
-	// animate when init done
 	var textureList = {
 		star			:'asset/particles/star.png',
 		spikey			:'asset/particles/spikey.png',
@@ -123,8 +102,28 @@ function init()
 		raindrop2flip	:'asset/particles/raindrop2flip.png',
 		checkerboard	:'asset/particles/checkerboard.jpg',
 	}
+	loader.push(new Promise( (resolve, reject) =>{
+		TextureManager.load(textureList, () => {
+			for(var i in additionalData)
+			{
+				if(i == 'initDone') continue
 
-	TextureManager.load(textureList, ()=>{
+				var data = additionalData[i]
+				convertVector3(data)
+		        if (data.hasOwnProperty("texture") && data.hasOwnProperty("particleTexture")) {
+		            data.particleTexture = TextureManager.get(data.texture)
+		        }
+		        Examples[i] = data
+		        particleList.push(i)
+		        Examples.listParticles.push(i)
+				fileName = i
+			}
+			Examples.initTexture()
+			resolve("init textures and additional data done")
+		})
+	}))
+
+	Promise.all(loader).then(val=>{
 
 		// FLOOR
 		var floorTexture = TextureManager.get('checkerboard');
@@ -137,17 +136,41 @@ function init()
 		floor.rotation.x = Math.PI / 2;
 		scene.add(floor);
 
-		Examples.initTexture()
 		restartEngine(Examples[fileName])
+		//////
 		// init GUI
+		/////
+		var parameters =
+		{
+			Particle: 	fileName, // default value
+			Export: 	function(){
+							Examples[fileName].particleTexture = ''
+							FileSaver.saveAs(new Blob([JSON.stringify(Examples[fileName])], {type: "text/plain;charset=utf-8"}), fileName + ".json")
+							Examples.initTexture()
+						},
+			Refresh: 	function(){
+							restartEngine(Examples[fileName])
+						},
+		};
+		gui.add(parameters, "Particle", particleList)
+		.onChange(function(newValue){
+			restartEngine(Examples[newValue]);
+			gui.removeFolder(fileName);
+			fileName = newValue;
+			var curFolder = gui.addFolder(fileName);
+			Examples.updateGUI(Examples[fileName], curFolder, engine);
+		});
+
 		gui.add( parameters, "Export");
 		gui.add( parameters, "Refresh");
 		gui.removeFolder(fileName);
 		var curFolder = gui.addFolder(fileName);
 		Examples.updateGUI(Examples[fileName], curFolder, engine);
 
-		gui.open();	
+		gui.open();
 		animate()
+	}).catch( reason => {
+		console.error("Failed with reason : ", reason)
 	})
 	
 }
@@ -161,17 +184,17 @@ function animate()
 
 function restartEngine(parameters)
 {
-	resetCamera();
+	//resetCamera();
 	if(engine)
 	{
 		engine.destroy();
-		window.mainCharacter.remove(engine.particleMesh)
+		window.scene.remove(engine.particleMesh)
 	}
 	engine = new ParticleEngine();
 	engine.setValues( parameters );
 	engine.initialize();
 	engine.startAnimation = true
-	window.mainCharacter.add(engine.particleMesh)
+	window.scene.add(engine.particleMesh)
 }
 
 function resetCamera()
@@ -187,48 +210,43 @@ function resetCamera()
 	THREEx.WindowResize(renderer, window.camera);
 }
 
+function convertVector3(data) {
+    for (let key in data) {
+        if (data[key].hasOwnProperty("x") && data[key].hasOwnProperty("y") && data[key].hasOwnProperty("z")) {
+            data[key] = new THREE.Vector3(data[key].x, data[key].y, data[key].z)
+        } else if (typeof(data[key]) === 'object') {
+            convertVector3(data[key])
+        }
+    }
+}
 
 function update()
 {
-/*
-	if ( keyboard.pressed("1") ) 
-		restartEngine( fountain );
-	if ( keyboard.pressed("2") ) 
-		restartEngine( startunnel );
-	if ( keyboard.pressed("3") ) 
-		restartEngine( starfield );
-	if ( keyboard.pressed("4") ) 
-		restartEngine( fireflies );
-		
-	if ( keyboard.pressed("5") ) 
-		restartEngine( clouds );
-	if ( keyboard.pressed("6") ) 
-		restartEngine( smoke );
-		
-	if ( keyboard.pressed("7") ) 
-		restartEngine( fireball );
-	if ( keyboard.pressed("8") ) 
-		restartEngine( Examples.candle );
-		
-	if ( keyboard.pressed("9") ) 
-		restartEngine( rain );
-	if ( keyboard.pressed("0") ) 
-		restartEngine( snow );
-		
-	if ( keyboard.pressed("q") ) 
-		restartEngine( firework );
-	// also: reset camera angle
-*/
-	
+	if(!window.is_running) return
+
 	controls.update();
 	stats.update();
-	
+
 	var dt = clock.getDelta();
 	if(engine)
-		engine.update( dt * 0.5 );	
+		engine.update( dt );
+
+	window.mainCharacter && window.mainCharacter.updateAnimation(dt)
 }
 
 function render() 
 {
 	renderer.render( scene, window.camera );
 }
+
+
+window.addEventListener('blur', (event)=>{
+	window.is_running = false
+	console.log('pause')
+})
+
+window.addEventListener('focus', (event)=>{
+	window.is_running = true
+	clock.getDelta();
+	console.log('resume')
+})
