@@ -86,7 +86,7 @@ var Examples =
 	'snowflake'		,
 	'smokeparticle'	,
 	'raindrop2flip'	,
-	'checkerboard'
+	'glowFlare'
 	],
 	// (1) build GUI for easy effects access.
 	// (2) write ParticleEngineExamples.js
@@ -407,15 +407,15 @@ var Examples =
 		// Position Base : THREE.Vector3
 		target.positionBase = target.positionBase || engine.positionBase;
 		var folder = mainFolder.addFolder("Position Base");
-		folder.add(target.positionBase, "x", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.positionBase, "x", -5000, 5000, 5).onChange(function(newValue){
 			target.positionBase.x = newValue;
 			engine.positionBase.x = newValue;
 		});
-		folder.add(target.positionBase, "y", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.positionBase, "y", -5000, 5000, 5).onChange(function(newValue){
 			target.positionBase.y = newValue;
 			engine.positionBase.y = newValue;
 		});
-		folder.add(target.positionBase, "z", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.positionBase, "z", -5000, 5000, 5).onChange(function(newValue){
 			target.positionBase.z = newValue;
 			engine.positionBase.z = newValue;
 		});
@@ -434,15 +434,15 @@ var Examples =
 		{
 			target.positionSpread = target.positionSpread || engine.positionSpread;
 			folder = mainFolder.addFolder("Position Spread");
-			folder.add(target.positionSpread, "x", -500, 500, 5).onChange(function(newValue){
+			folder.add(target.positionSpread, "x", -5000, 5000, 5).onChange(function(newValue){
 				target.positionSpread.x = newValue;
 				engine.positionSpread.x = newValue;
 			});
-			folder.add(target.positionSpread, "y", -500, 500, 5).onChange(function(newValue){
+			folder.add(target.positionSpread, "y", -5000, 5000, 5).onChange(function(newValue){
 				target.positionSpread.y = newValue;
 				engine.positionSpread.y = newValue;
 			});
-			folder.add(target.positionSpread, "z", -500, 500, 5).onChange(function(newValue){
+			folder.add(target.positionSpread, "z", -5000, 5000, 5).onChange(function(newValue){
 				target.positionSpread.z = newValue;
 				engine.positionSpread.z = newValue;
 			});
@@ -474,15 +474,15 @@ var Examples =
 		{
 			target.velocityBase = target.velocityBase || engine.velocityBase;
 			folder = mainFolder.addFolder("Velocity Base");
-			folder.add(target.velocityBase, "x", -500, 500, 5).onChange(function(newValue){
+			folder.add(target.velocityBase, "x", -5000, 5000, 5).onChange(function(newValue){
 				target.velocityBase.x = newValue;
 				engine.velocityBase.x = newValue;
 			});
-			folder.add(target.velocityBase, "y", -500, 500, 5).onChange(function(newValue){
+			folder.add(target.velocityBase, "y", -5000, 5000, 5).onChange(function(newValue){
 				target.velocityBase.y = newValue;
 				engine.velocityBase.y = newValue;
 			});
-			folder.add(target.velocityBase, "z", -500, 500, 5).onChange(function(newValue){
+			folder.add(target.velocityBase, "z", -5000, 5000, 5).onChange(function(newValue){
 				target.velocityBase.z = newValue;
 				engine.velocityBase.z = newValue;
 			});
@@ -504,15 +504,15 @@ var Examples =
 		// Velocity SPREAD : THREE.Vector3
 		target.velocitySpread = target.velocitySpread || engine.velocitySpread;
 		folder = mainFolder.addFolder("Velocity Spread");
-		folder.add(target.velocitySpread, "x", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.velocitySpread, "x", -5000, 5000, 5).onChange(function(newValue){
 			target.velocitySpread.x = newValue;
 			engine.velocitySpread.x = newValue;
 		});
-		folder.add(target.velocitySpread, "y", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.velocitySpread, "y", -5000, 5000, 5).onChange(function(newValue){
 			target.velocitySpread.y = newValue;
 			engine.velocitySpread.y = newValue;
 		});
-		folder.add(target.velocitySpread, "z", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.velocitySpread, "z", -5000, 5000, 5).onChange(function(newValue){
 			target.velocitySpread.z = newValue;
 			engine.velocitySpread.z = newValue;
 		});
@@ -525,30 +525,30 @@ var Examples =
 		// Acceleration Base : THREE.Vector3
 		target.accelerationBase = target.accelerationBase || engine.accelerationBase;
 		folder = mainFolder.addFolder("Acceleration Base");
-		folder.add(target.accelerationBase, "x", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.accelerationBase, "x", -5000, 5000, 5).onChange(function(newValue){
 			target.accelerationBase.x = newValue;
 			engine.accelerationBase.x = newValue;
 		});
-		folder.add(target.accelerationBase, "y", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.accelerationBase, "y", -5000, 5000, 5).onChange(function(newValue){
 			target.accelerationBase.y = newValue;
 			engine.accelerationBase.y = newValue;
 		});
-		folder.add(target.accelerationBase, "z", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.accelerationBase, "z", -5000, 5000, 5).onChange(function(newValue){
 			target.accelerationBase.z = newValue;
 			engine.accelerationBase.z = newValue;
 		});
 		// Acceleration Spread
 		folder = mainFolder.addFolder("Acceleration Spread");
 		target.accelerationSpread = target.accelerationSpread || engine.accelerationSpread
-		folder.add(target.accelerationSpread, "x", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.accelerationSpread, "x", -5000, 5000, 5).onChange(function(newValue){
 			target.accelerationSpread.x = newValue;
 			engine.accelerationSpread.x = newValue;
 		});
-		folder.add(target.accelerationSpread, "y", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.accelerationSpread, "y", -5000, 5000, 5).onChange(function(newValue){
 			target.accelerationSpread.y = newValue;
 			engine.accelerationSpread.y = newValue;
 		});
-		folder.add(target.accelerationSpread, "z", -500, 500, 5).onChange(function(newValue){
+		folder.add(target.accelerationSpread, "z", -5000, 5000, 5).onChange(function(newValue){
 			target.accelerationSpread.z = newValue;
 			engine.accelerationSpread.z = newValue;
 		});

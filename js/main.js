@@ -100,6 +100,7 @@ function init()
 		snowflake		:'asset/particles/snowflake.png',
 		smokeparticle	:'asset/particles/smokeparticle.png',
 		raindrop2flip	:'asset/particles/raindrop2flip.png',
+		glowFlare		:'asset/particles/glowFlare.png',
 		checkerboard	:'asset/particles/checkerboard.jpg',
 	}
 	loader.push(new Promise( (resolve, reject) =>{
@@ -182,6 +183,11 @@ function animate()
 	update();
 }
 
+function refreshEngine()
+{
+	engine.SetAnimation(true)
+}
+
 function restartEngine(parameters)
 {
 	//resetCamera();
@@ -193,7 +199,7 @@ function restartEngine(parameters)
 	engine = new ParticleEngine();
 	engine.setValues( parameters );
 	engine.initialize();
-	engine.startAnimation = true
+	engine.SetAnimation(true)
 	window.scene.add(engine.particleMesh)
 }
 

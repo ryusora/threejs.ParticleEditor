@@ -5,7 +5,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 var Tween = require('./Tween.js');
-window.scene = require('./Scene.js');
 
 /////////////
 // SHADERS //
@@ -116,16 +115,16 @@ Particle.prototype.update = function(dt)
 	// if the tween for a given attribute is nonempty,
 	//  then use it to update the attribute's value
 
-	if ( this.sizeTween.times.length > 0 )
+	if ( this.sizeTween && this.sizeTween.times.length > 0 )
 		this.size = lerp(this.sizeTween.times, this.sizeTween.values, this.age );
 				
-	if ( this.colorTween.times.length > 0 )
+	if ( this.colorTween && this.colorTween.times.length > 0 )
 	{
 		var colorHSL = lerp(this.colorTween.times, this.colorTween.values, this.age );
 		this.color = new THREE.Color().setHSL( colorHSL.x, colorHSL.y, colorHSL.z );
 	}
 	
-	if ( this.opacityTween.times.length > 0 ) {
+	if ( this.opacityTween && this.opacityTween.times.length > 0 ) {
 		this.opacity = lerp(this.opacityTween.times, this.opacityTween.values, this.age );
 	}
 }
@@ -219,6 +218,23 @@ function ParticleEngine()
 		blending: THREE.NormalBlending, depthTest: true,
 	});
 	this.startAnimation = false
+	this.particleEnd = true
+	this.particleDieCount = 0
+}
+
+ParticleEngine.prototype.SetAnimation = function( value)
+{
+	this.startAnimation = value
+	this.particleEnd = !value
+	if(this.startAnimation)
+	{
+		this.particleDieCount = 0
+		this.updateAll()
+	}
+	else
+	{
+		this.emitterAlive = false
+	}
 }
 
 ParticleEngine.prototype.setValues = function( parameters )
@@ -234,9 +250,6 @@ ParticleEngine.prototype.setValues = function( parameters )
 		this[ key ] = parameters[ key ];
 
 	// attach tweens to particles
-	Particle.prototype.sizeTween    = this.sizeTween;
-	Particle.prototype.colorTween   = this.colorTween;
-	Particle.prototype.opacityTween = this.opacityTween;
 
 	// calculate/set derived particle engine values
 	this.particleArray = [];
@@ -259,7 +272,7 @@ ParticleEngine.prototype.setValues = function( parameters )
 		blending: THREE.NormalBlending, 
 		depthTest: true, depthWrite: false,
 	});
-	//this.particleMesh = new THREE.Mesh();
+	this.particleMesh = new THREE.Points( this.particleGeometry, this.particleMaterial );
 }
 	
 // helper functions for randomization
@@ -280,6 +293,12 @@ ParticleEngine.prototype.createParticle = function()
 
 	this.initParticle(particle)
 
+
+	// init tween
+	particle.sizeTween    = this.sizeTween;
+	particle.colorTween   = this.colorTween;
+	particle.opacityTween = this.opacityTween;
+
 	particle.age   = 0;
 	particle.alive = 0; // particles initialize as inactive
 	
@@ -298,7 +317,7 @@ ParticleEngine.prototype.initParticle = function(particle)
 		var vec3 = new THREE.Vector3( r * Math.cos(t), r * Math.sin(t), z );
 		particle.position = new THREE.Vector3().addVectors( this.positionBase, vec3.multiplyScalar( this.positionRadius ) );
 	}
-		
+
 	if ( this.velocityStyle == Type.CUBE )
 	{
 		particle.velocity     = this.randomVector3( this.velocityBase,     this.velocitySpread ); 
@@ -330,6 +349,8 @@ ParticleEngine.prototype.updateAll = function()
 	{
 		this.initParticle(this.particleArray[i])
 	}
+	this.emitterAge = 0.0
+	this.emitterAlive = true
 }
 
 ParticleEngine.prototype.initialize = function()
@@ -346,6 +367,7 @@ ParticleEngine.prototype.initialize = function()
 	{
 		// remove duplicate code somehow, here and in update function below.
 		this.particleArray.push(this.createParticle())
+
 		positions[t] 		= this.particleArray[i].position.x
 		positions[t+1] 		= this.particleArray[i].position.y
 		positions[t+2] 		= this.particleArray[i].position.z
@@ -373,7 +395,6 @@ ParticleEngine.prototype.initialize = function()
 		this.particleMaterial.depthTest = false;
 
 	
-	this.particleMesh = new THREE.Points( this.particleGeometry, this.particleMaterial );
 	this.particleMesh.dynamic = true;
 	this.particleMesh.sortParticles = true;
 	//this.particleMesh.renderOrder = 5;
@@ -397,6 +418,7 @@ ParticleEngine.prototype.update = function(dt)
 			if ( this.particleArray[i].age > this.particleDeathAge ) 
 			{
 				this.particleArray[i].alive = 0.0;
+				this.particleDieCount++
 				recycleIndices.push(i);
 			}
 
@@ -417,11 +439,17 @@ ParticleEngine.prototype.update = function(dt)
 			this.particleGeometry.attributes.customOpacity.needsUpdate 	= true
 			this.particleGeometry.attributes.customSize.needsUpdate 	= true
 			this.particleGeometry.attributes.customAngle.needsUpdate 	= true
-		}		
+		}
 	}
 
 	// check if particle emitter is still running
-	if ( !this.emitterAlive ) return;
+	if ( !this.emitterAlive )
+	{
+		console.log(this.particleDieCount + " vs " + this.particleArray.length)
+		if(this.particleDieCount >= this.particleArray.length - 1)
+			this.particleEnd = true
+		return;
+	}
 
 	// if no particles have died yet, then there are still particles to activate
 	if ( this.emitterAge < this.particleDeathAge )
@@ -437,15 +465,20 @@ ParticleEngine.prototype.update = function(dt)
 	}
 
 	// if any particles have died while the emitter is still running, we imediately recycle them
+	console.log("recycle particle : " + recycleIndices.length)
 	for (var j = 0; j < recycleIndices.length; j++)
 	{
 		var i = recycleIndices[j];
-		this.particleArray[i] = this.createParticle();
+		this.initParticle(this.particleArray[i]);
+		this.particleArray[i].age = 0
 		this.particleArray[i].alive = 1.0; // activate right away
 		this.particleGeometry.attributes.position.array[i*3] 		= this.particleArray[i].position.x;
 		this.particleGeometry.attributes.position.array[i*3 + 1] 	= this.particleArray[i].position.y;
 		this.particleGeometry.attributes.position.array[i*3 + 2] 	= this.particleArray[i].position.z;
+		// minus dead count
+		this.particleDieCount--
 	}
+
 
 	// stop emitter?
 	this.emitterAge += dt;
