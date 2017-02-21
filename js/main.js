@@ -58,6 +58,8 @@ function init()
 			resolve('Main Character init complete')
 		})
 	}))
+
+	scene.background = new THREE.Color(0x33ccff)
 	
 	// RENDERER
 	renderer = new THREE.WebGLRenderer(GraphicProfiler.getWebGLContextSetting());
@@ -84,7 +86,7 @@ function init()
 	scene.add(light);
 	// SKYBOX/FOG
 	var skyBoxGeometry = new THREE.CubeGeometry( 4000, 4000, 4000 );
-	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x33ccff, side: THREE.BackSide } );
 	var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
     scene.add(skyBox);
 	
@@ -102,6 +104,7 @@ function init()
 		raindrop2flip	:'asset/particles/raindrop2flip.png',
 		glowFlare		:'asset/particles/glowFlare.png',
 		checkerboard	:'asset/particles/checkerboard.jpg',
+		test			:'asset/particles/test.png',
 	}
 	loader.push(new Promise( (resolve, reject) =>{
 		TextureManager.load(textureList, () => {
@@ -127,15 +130,15 @@ function init()
 	Promise.all(loader).then(val=>{
 
 		// FLOOR
-		var floorTexture = TextureManager.get('checkerboard');
-		floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-		floorTexture.repeat.set( 10, 10 );
-		var floorMaterial = new THREE.MeshBasicMaterial( { color: 0x444444, map: floorTexture, side: THREE.DoubleSide } );
-		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-		var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-		floor.position.set(0,0,0);
-		floor.rotation.x = Math.PI / 2;
-		scene.add(floor);
+		// var floorTexture = TextureManager.get('checkerboard');
+		// floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+		// floorTexture.repeat.set( 10, 10 );
+		// var floorMaterial = new THREE.MeshBasicMaterial( { color: 0x444444, map: floorTexture, side: THREE.DoubleSide } );
+		// var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+		// var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+		// floor.position.set(0,0,0);
+		// floor.rotation.x = Math.PI / 2;
+		// scene.add(floor);
 
 		restartEngine(Examples[fileName])
 		//////
@@ -150,7 +153,8 @@ function init()
 							Examples.initTexture()
 						},
 			Refresh: 	function(){
-							restartEngine(Examples[fileName])
+							//restartEngine(Examples[fileName])
+							refreshEngine()
 						},
 		};
 		gui.add(parameters, "Particle", particleList)

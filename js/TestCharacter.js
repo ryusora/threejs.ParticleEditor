@@ -60,6 +60,7 @@ TestCharacter.prototype = Object.assign(Object.create(THREE.BlendCharacter.proto
 	        }
 	        console.log(this.position)
 	    }, false)
+	    this.rotateY(Math.PI)
 	    this.scale.multiplyScalar(16)
 	    this.play('run', 1)
 	},

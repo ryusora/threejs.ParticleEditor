@@ -86,7 +86,8 @@ var Examples =
 	'snowflake'		,
 	'smokeparticle'	,
 	'raindrop2flip'	,
-	'glowFlare'
+	'glowFlare'		,
+	'test'
 	],
 	// (1) build GUI for easy effects access.
 	// (2) write ParticleEngineExamples.js
@@ -399,6 +400,17 @@ var Examples =
 			target.particleTexture = TextureManager.get(newValue)
 		})
 
+		// blend mode
+		var blendMode = ['normal', 'additive']
+
+		target.blendStyle = target.blendStyle || engine.blendStyle
+		var blendStyle = [] 
+		blendStyle.push(blendMode[target.blendStyle - 1])
+		gui.add(blendStyle, "0", blendMode).name("Blend Style").onChange(newValue=>{
+			target.blendStyle = blendMode.indexOf(newValue) + 1
+			engine.blendStyle = blendMode.indexOf(newValue) + 1
+		})
+
 		//===============================================================
 		// position
 		//===============================================================
@@ -673,17 +685,17 @@ var Examples =
 		// Color base
 		target.colorBase = target.colorBase || engine.colorBase
 		folder = mainFolder.addFolder("Color Base")
-		folder.add(target.colorBase, 'x').onChange(newValue =>{
+		folder.add(target.colorBase, 'x').name('hue').onChange(newValue =>{
 			target.colorBase.x = newValue
 			engine.colorBase.x = newValue
 		})
 
-		folder.add(target.colorBase, 'y').onChange(newValue =>{
+		folder.add(target.colorBase, 'y').name('saturation').onChange(newValue =>{
 			target.colorBase.y = newValue
 			engine.colorBase.y = newValue
 		})
 
-		folder.add(target.colorBase, 'z').onChange(newValue =>{
+		folder.add(target.colorBase, 'z').name('lightness').onChange(newValue =>{
 			target.colorBase.z = newValue
 			engine.colorBase.z = newValue
 		})
@@ -691,17 +703,17 @@ var Examples =
 		// Color Spread
 		target.colorSpread = target.colorSpread || engine.colorSpread
 		folder = mainFolder.addFolder("Color Spread")
-		folder.add(target.colorSpread, 'x').onChange(newValue =>{
+		folder.add(target.colorSpread, 'x').name('hue').onChange(newValue =>{
 			target.colorSpread.x = newValue
 			engine.colorSpread.x = newValue
 		})
 
-		folder.add(target.colorSpread, 'y').onChange(newValue =>{
+		folder.add(target.colorSpread, 'y').name('saturation').onChange(newValue =>{
 			target.colorSpread.y = newValue
 			engine.colorSpread.y = newValue
 		})
 
-		folder.add(target.colorSpread, 'z').onChange(newValue =>{
+		folder.add(target.colorSpread, 'z').name('lightness').onChange(newValue =>{
 			target.colorSpread.z = newValue
 			engine.colorSpread.z = newValue
 		})
@@ -721,15 +733,15 @@ var Examples =
 		for(let i in target.colorTween.values)
 		{
 			let subFolder = folder.addFolder("v-" + i)
-			subFolder.add(target.colorTween.values[i], 'x').onChange(newValue=>{
+			subFolder.add(target.colorTween.values[i], 'x').name('hue').onChange(newValue=>{
 				target.colorTween.values[i].x = newValue
 				engine.colorTween.values[i].x = newValue
 			})
-			subFolder.add(target.colorTween.values[i], 'y').onChange(newValue=>{
+			subFolder.add(target.colorTween.values[i], 'y').name('saturation').onChange(newValue=>{
 				target.colorTween.values[i].y = newValue
 				engine.colorTween.values[i].y = newValue
 			})
-			subFolder.add(target.colorTween.values[i], 'z').onChange(newValue=>{
+			subFolder.add(target.colorTween.values[i], 'z').name('lightness').onChange(newValue=>{
 				target.colorTween.values[i].z = newValue
 				engine.colorTween.values[i].z = newValue
 			})

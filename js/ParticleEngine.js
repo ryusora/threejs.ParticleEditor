@@ -348,6 +348,8 @@ ParticleEngine.prototype.updateAll = function()
 	for(let i in this.particleArray)
 	{
 		this.initParticle(this.particleArray[i])
+		this.particleArray[i].age = 0
+		this.particleArray[i].alive = 0
 	}
 	this.emitterAge = 0.0
 	this.emitterAlive = true
@@ -445,7 +447,6 @@ ParticleEngine.prototype.update = function(dt)
 	// check if particle emitter is still running
 	if ( !this.emitterAlive )
 	{
-		console.log(this.particleDieCount + " vs " + this.particleArray.length)
 		if(this.particleDieCount >= this.particleArray.length - 1)
 			this.particleEnd = true
 		return;
@@ -465,7 +466,6 @@ ParticleEngine.prototype.update = function(dt)
 	}
 
 	// if any particles have died while the emitter is still running, we imediately recycle them
-	console.log("recycle particle : " + recycleIndices.length)
 	for (var j = 0; j < recycleIndices.length; j++)
 	{
 		var i = recycleIndices[j];
